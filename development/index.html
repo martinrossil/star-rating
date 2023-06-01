@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Description" content="Star Rating Development">
+    <meta name="theme-color" content="#FFFFFF">
+    <link rel="preload" href="styles.css" as="style" />
+    <link rel="stylesheet" href="styles.css"/>
+    <title>Star Rating Development</title>
+</head>
+    <body>
+        <div class="card">
+            <star-rating value="1"></star-rating>
+            <p>Large (L)</p>
+        </div>
+        <div class="card">
+            <star-rating value="3.5"></star-rating>
+            <p>Medium (M)</p>
+        </div>
+        <div class="card">
+            <star-rating value="5"></star-rating>
+            <p>Small (S)</p>
+        </div>
+        <div class="card">
+            <star-rating disabled value="3"></star-rating>
+            <p>Disabled</p>
+        </div>
+        <script type="module" src="star-rating.js" defer></script>
+    </body>
+</html>

@@ -1,0 +1,36 @@
+html {
+    height: 100%;
+    -webkit-font-smoothing: auto;
+}
+body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(314px, 1fr));
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    padding: 32px;
+    gap: 32px;
+    align-items: start;
+    justify-content: center;
+    background: #f8fafc;
+}
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+    border-radius: 8px;
+    background: white;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+p {
+    text-align: center;
+}
+* {
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;margin: 0;
+    -ms-overflow-style: none;scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+    display: none;
+}
