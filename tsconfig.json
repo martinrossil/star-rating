@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",                     // Set the JavaScript language version for emitted JavaScript and include compatible library declarations.
+        "module": "ESNext",                     // Sets the module system for the program. See the Modules reference page for more information. You very likely want "CommonJS" for node projects.
+        "moduleResolution": "Node",             // Specify the module resolution strategy, should this be "nodenext"
+        "strict": true,                         // The strict flag enables a wide range of type checking behavior that results in stronger guarantees of program correctness. Turning this on is equivalent to enabling all of the strict mode family options, which are outlined below. You can then turn off individual strict mode family checks as needed.
+        "noImplicitAny": true,                  // any not allowed
+        "composite": true,                      // The composite option enforces certain constraints which make it possible for build tools (including TypeScript itself, under --build mode) to quickly determine if a project has been built yet.
+        "incremental": true,                    // "composite: true" forces this to be true. Tells TypeScript to save information about the project graph from the last compilation to files stored on disk.
+        "noUncheckedIndexedAccess": true,       // Add undefined to a type when accessed using an index.
+        "skipLibCheck": true,                   // Skip type checking all .d.ts files.
+        "noEmit": true,                         // Disable emitting file from a compilation.
+        "noErrorTruncation": true
+    },
+    "include": ["src/**/*"]                               
+}
