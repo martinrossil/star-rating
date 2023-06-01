@@ -1,0 +1,12 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+      "xo",
+      "xo-typescript"
+  ],
+  "ignorePatterns": ["**/*.js"],
+  "rules": {
+      
+  }
+}
