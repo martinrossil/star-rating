@@ -13,9 +13,10 @@ The component must be accessible and work in the majority of browser; Edge, Chro
 ## Local setup
 - Linting is required, so code reviews can be done faster and without the "You missed a semi colon here!".
 - Local server setup with hot module reload is enabled with rollup and esbuild for fast feedback.
-- Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
 
 ## Installation
+The following dev dependencies are installed.
+
 - Code is of course written in Typescript.
 	- typescript
 
@@ -39,3 +40,21 @@ The component must be accessible and work in the majority of browser; Edge, Chro
 		- rollup-plugin-livereload
 		- rollup-plugin-serve
 		- rollup-plugin-typescript2
+
+So to get started, you clone the repo:
+```shell
+git clone https://github.com/martinrossil/star-rating.git
+```
+
+Install dependencies:
+```shell
+npm install
+```
+
+Start local development server with Hot Module Reload:
+```shell
+npm run dev
+```
+
+## Production build
+- Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
