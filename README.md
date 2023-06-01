@@ -155,5 +155,65 @@ export default class StarRating extends HTMLElement implements IStarRating {
 customElements.define('star-rating', StarRating);
 ```
 
+We now have to syncronize the properties and attributes, so when one changes, the
+other updates aswell.
+
+We add the static class member observedAttributes() above the cosntructor,
+to watch for attributes changes.
+The methos should return an Array of strings, representing the attribute names.
+Be careful, no uppercase characters!
+
+```ts
+public static get observedAttributes() {
+	return ['value', 'disabled', 'size', 'readonly'];
+}
+```
+
+And add the attributeChangedCallback() methos at the bottom of the class.
+
+```ts
+public attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
+
+}
+```
+
+We implement attribute changes that sets the property.
+
+```ts
+private valueAttributeChanged(value: string) {
+	this.value = parseFloat(value);
+}
+
+private disabledAttributeChanged(value: string) {
+	this.disabled = value === '';
+}
+
+private sizeAttributeChanged(value: string) {
+	if (value === 'small' || value === 'medium' || value === 'large') {
+		this.size = value;
+	}
+}
+
+private readonlyAttributeChanged(value: string) {
+	this.readOnly = value === '';
+}
+
+public attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
+	switch (name) {
+		case 'value': this.valueAttributeChanged(newValue);
+			break;
+		case 'disabled': this.disabledAttributeChanged(newValue);
+			break;
+		case 'size': this.sizeAttributeChanged(newValue);
+			break;
+		case 'readonly': this.readonlyAttributeChanged(newValue);
+			break;
+		default: {
+			break;
+		}
+	}
+}
+```
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
