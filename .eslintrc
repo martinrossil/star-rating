@@ -7,6 +7,7 @@
   ],
   "ignorePatterns": ["**/*.js"],
   "rules": {
-      
+    "@typescript-eslint/ban-types": "off",              // turns off: 'Don't use `null` as a type. Use `undefined` instead.' 
+    "@typescript-eslint/restrict-plus-operands": "off"  // turns off: 'Operands of '+' operation must either be both strings or both numbers. Consider using a template literal.'
   }
 }
