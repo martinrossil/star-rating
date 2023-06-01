@@ -7,7 +7,20 @@
   ],
   "ignorePatterns": ["**/*.js"],
   "rules": {
-    "@typescript-eslint/ban-types": "off",              // turns off: 'Don't use `null` as a type. Use `undefined` instead.' 
-    "@typescript-eslint/restrict-plus-operands": "off"  // turns off: 'Operands of '+' operation must either be both strings or both numbers. Consider using a template literal.'
+    // Don't use `null` as a type. Use `undefined` instead.
+    "@typescript-eslint/ban-types": "off",
+    // Operands of '+' operation must either be both strings or both numbers.
+    // Consider using a template literal.
+    "@typescript-eslint/restrict-plus-operands": "off",
+    // Use a `type` instead of an `interface`.
+    "@typescript-eslint/consistent-type-definitions": "off",
+    // Interface name `I*` must match one of the following formats: StrictPascalCase
+    "@typescript-eslint/naming-convention": "off",
+    // Comments should not begin with a lowercase character.
+    "capitalized-comments": "off",
+    // All imports in the declaration are only used as types. Use `import type`.
+    "@typescript-eslint/consistent-type-imports": "off",
+    // Member * should be declared before all public constructor definitions.
+    "@typescript-eslint/member-ordering": "off"
   }
 }
