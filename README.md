@@ -215,5 +215,9 @@ public attributeChangedCallback(name: string, oldValue: string | null, newValue:
 }
 ```
 
+We now have to implement setter runtime guards and property -> attribute syncronization.
+
+
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
