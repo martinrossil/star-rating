@@ -56,5 +56,104 @@ Start local development server with Hot Module Reload:
 npm run dev
 ```
 
+## Implementation
+When we start developing a class based custom element, written in Typescript,
+we first identify the public interface and sub elements.
+
+In this case, what properties / attributes the outside world can set.
+
+There are two ways a custom element can be instantiated.
+
+```ts
+const starRating = new StarRating();
+document.body.appendChild(starRating);
+```
+or as a html tag
+```html
+<star-rating></star-rating>
+```
+
+So we start by defining the interface that the StarRating element implements in IStarRating.ts.
+```ts
+export default interface IStarRating extends HTMLElement {
+	/**
+	 * Sets the current star rating, valid values are 0 - 5, both inclusive.
+	 * Default value is 0.
+	 */
+	value: number;
+
+	/**
+	 * A boolean value that sets if the element is disabled or not.
+	 * Default value is false.
+	 */
+	disabled: boolean;
+
+	/**
+	 * The star size, valid values are 'small', 'medium' and 'large'.
+	 * small = 16px, medium = 24px and large = 32px.
+	 * Default value is 'medium'
+	 */
+	size: 'small' | 'medium' | 'large';
+
+	/**
+	 * A boolean value that sets if the element is read only or not.
+	 * Default value is false
+	 */
+	readOnly: boolean;
+}
+```
+
+And implement this interface in the StarRating element.
+```ts
+import IStarRating from './IStarRating';
+
+export default class StarRating extends HTMLElement implements IStarRating {
+	public constructor() {
+		super();
+	}
+
+	private _value = 0;
+
+	public get value() {
+		return this._value;
+	}
+
+	public set value(value: number) {
+		this._value = value;
+	}
+
+	private _disabled = false;
+
+	public get disabled() {
+		return this._disabled;
+	}
+
+	public set disabled(value: boolean) {
+		this._disabled = value;
+	}
+
+	private _size: 'small' | 'medium' | 'large' = 'medium';
+
+	public get size() {
+		return this._size;
+	}
+
+	public set size(value: 'small' | 'medium' | 'large') {
+		this._size = value;
+	}
+
+	private _readOnly = false;
+
+	public get readOnly() {
+		return this._readOnly;
+	}
+
+	public set readOnly(value: boolean) {
+		this._readOnly = value;
+	}
+}
+customElements.define('star-rating', StarRating);
+```
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
