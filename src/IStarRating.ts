@@ -13,13 +13,6 @@ export default interface IStarRating extends HTMLElement {
 	disabled: boolean;
 
 	/**
-	 * The star size, valid values are 'small', 'medium' and 'large'.
-	 * small = 16px, medium = 24px and large = 32px.
-	 * Default value is 'medium'.
-	 */
-	size: 'small' | 'medium' | 'large';
-
-	/**
 	 * A boolean value that sets if the element is read only or not.
 	 * Default value is false.
 	 */
