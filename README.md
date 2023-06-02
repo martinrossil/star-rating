@@ -629,5 +629,33 @@ We remove the gray background from the star-bold element and we get this.
 
 ![](images/img_5.png)
 
+Lets update the gap between the stars when resizing, so it looks better.
+In the star-rating element we add this.
+
+```ts
+private sizeChanged() {
+	this.updateGapBetweenStars();
+	this.updateChildrenSize();
+	this.updateSizeAttribute();
+}
+
+private updateGapBetweenStars() {
+	let gap = 8;
+	if (this.size === 'small') {
+		gap = 4;
+	} else if (this.size === 'large') {
+		gap = 12;
+	}
+
+	this.style.gap = gap + 'px';
+}
+```
+
+And we get this.
+
+![](images/img_6.png)
+
+
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.

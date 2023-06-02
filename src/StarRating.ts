@@ -10,7 +10,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 	public constructor() {
 		super();
 		this.style.display = 'inline-flex';
-		this.style.gap = '4px';
+		this.style.gap = '8px';
 		this.appendChild(new StarBold());
 		this.appendChild(new StarBold());
 		this.appendChild(new StarBold());
@@ -78,8 +78,20 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 	}
 
 	private sizeChanged() {
+		this.updateGapBetweenStars();
 		this.updateChildrenSize();
 		this.updateSizeAttribute();
+	}
+
+	private updateGapBetweenStars() {
+		let gap = 8;
+		if (this.size === 'small') {
+			gap = 4;
+		} else if (this.size === 'large') {
+			gap = 12;
+		}
+
+		this.style.gap = gap + 'px';
 	}
 
 	private updateChildrenSize() {
