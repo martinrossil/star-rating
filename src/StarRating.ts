@@ -171,9 +171,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 				break;
 			case 'readonly': this.readonlyAttributeChanged(newValue);
 				break;
-			default: {
-				break;
-			}
+			default: break;
 		}
 	}
 }
