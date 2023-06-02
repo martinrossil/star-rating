@@ -78,7 +78,8 @@ So we start by defining the interface that the StarRating element implements in 
 export default interface IStarRating extends HTMLElement {
 	/**
 	 * Sets the current star rating, valid values are 0 - 5, both inclusive.
-	 * Default value is 0.
+	 * Selectable values are on the other hand 1 - 5, both inclusive.
+	 * Default value is NaN, which represents no value has been set.
 	 */
 	value: number;
 
@@ -91,13 +92,13 @@ export default interface IStarRating extends HTMLElement {
 	/**
 	 * The star size, valid values are 'small', 'medium' and 'large'.
 	 * small = 16px, medium = 24px and large = 32px.
-	 * Default value is 'medium'
+	 * Default value is 'medium'.
 	 */
 	size: 'small' | 'medium' | 'large';
 
 	/**
 	 * A boolean value that sets if the element is read only or not.
-	 * Default value is false
+	 * Default value is false.
 	 */
 	readOnly: boolean;
 }
@@ -112,7 +113,7 @@ export default class StarRating extends HTMLElement implements IStarRating {
 		super();
 	}
 
-	private _value = 0;
+	private _value = NaN;
 
 	public get value() {
 		return this._value;
@@ -158,7 +159,7 @@ customElements.define('star-rating', StarRating);
 We now have to syncronize the properties and attributes, so when one changes, the
 other updates aswell.
 
-We add the static class member observedAttributes() above the cosntructor,
+We add the static class member observedAttributes() above the constructor,
 to watch for attributes changes.
 The methos should return an Array of strings, representing the attribute names.
 Be careful, no uppercase characters!
@@ -216,6 +217,78 @@ public attributeChangedCallback(name: string, oldValue: string | null, newValue:
 ```
 
 We now have to implement setter runtime guards and property -> attribute syncronization.
+
+When the value attribute changes we call this method.
+
+```ts
+private valueAttributeChanged(value: string) {
+	this.value = parseFloat(value);
+}
+```
+
+We are sure that the parseFloat(value) returns a number data type, but we can't be sure it's not
+between the 0 - 5 range, so we need to add runtime checks for this.
+
+We implement guards in the value setter like this.
+The return early pattern is used to avoid deeply nested if statements.
+
+```ts
+public set value(value: number) {
+	if (this._value === value) {
+		return;
+	}
+
+	// NaN is one of those funny js things where NaN !== NaN,
+	// so we guard for this aswell.
+	if (isNaN(this._value) && isNaN(value)) {
+		return;
+	}
+
+	// If value is out of range, we reset to NaN.
+	if (value < 0 || value > 5) {
+		this._value = NaN;
+		return;
+	}
+
+	this._value = value;
+}
+```
+
+We now need to syncronize the attributes when the property changes.
+
+We add propertyChanged methods, that we use to syncronize the attributes and update the UI.
+
+```ts
+private valueChanged() {
+	if (isNaN(this.value)) {
+		this.removeAttribute('value');
+	} else {
+		this.setAttribute('value', this.value.toString());
+	}
+}
+
+public set value(value: number) {
+	if (this._value === value) {
+		return;
+	}
+
+	// NaN is one of those funny js things where NaN !== NaN,
+	// so we guard for this aswell.
+	if (isNaN(this._value) && isNaN(value)) {
+		return;
+	}
+
+	// If value is out of range, we reset to NaN.
+	if (value < 0 || value > 5) {
+		this._value = NaN;
+		this.valueChanged();
+		return;
+	}
+
+	this._value = value;
+	this.valueChanged();
+}
+```
 
 
 

@@ -9,15 +9,48 @@ export default class StarRating extends HTMLElement implements IStarRating {
 		super();
 	}
 
-	private _value = 0;
+	private valueChanged() {
+		if (isNaN(this.value)) {
+			this.removeAttribute('value');
+		} else {
+			this.setAttribute('value', this.value.toString());
+		}
+	}
+
+	private _value = NaN;
 
 	public get value() {
 		return this._value;
 	}
 
 	public set value(value: number) {
-		console.log('value changed', value);
+		if (this._value === value) {
+			return;
+		}
+
+		// NaN is one of those funny js things where NaN !== NaN,
+		// so we guard for this aswell.
+		if (isNaN(this._value) && isNaN(value)) {
+			return;
+		}
+
+		// If value is out of range, we reset to NaN.
+		if (value < 0 || value > 5) {
+			this._value = NaN;
+			this.valueChanged();
+			return;
+		}
+
 		this._value = value;
+		this.valueChanged();
+	}
+
+	private disabledChanged() {
+		if (this.disabled) {
+			this.setAttribute('disabled', '');
+		} else {
+			this.removeAttribute('disabled');
+		}
 	}
 
 	private _disabled = false;
@@ -27,8 +60,21 @@ export default class StarRating extends HTMLElement implements IStarRating {
 	}
 
 	public set disabled(value: boolean) {
-		console.log('disabled changed', value);
+		if (this._disabled === value) {
+			return;
+		}
+
 		this._disabled = value;
+		this.disabledChanged();
+	}
+
+	private sizeChanged() {
+		// medium size is default, so only set the size attribute for small and large.
+		if (this.size === 'small' || this.size === 'large') {
+			this.setAttribute('size', this.size);
+		} else {
+			this.removeAttribute('size');
+		}
 	}
 
 	private _size: 'small' | 'medium' | 'large' = 'medium';
@@ -38,8 +84,24 @@ export default class StarRating extends HTMLElement implements IStarRating {
 	}
 
 	public set size(value: 'small' | 'medium' | 'large') {
-		console.log('size changed', value);
-		this._size = value;
+		if (this._size === value) {
+			return;
+		}
+
+		// We have guarded this setter with types but we could be called from javascript,
+		// so guard for correct values here aswell.
+		if (value === 'small' || value === 'medium' || value === 'large') {
+			this._size = value;
+			this.sizeChanged();
+		}
+	}
+
+	private readOnlyChanged() {
+		if (this.readOnly) {
+			this.setAttribute('readonly', '');
+		} else {
+			this.removeAttribute('readonly');
+		}
 	}
 
 	private _readOnly = false;
@@ -49,8 +111,12 @@ export default class StarRating extends HTMLElement implements IStarRating {
 	}
 
 	public set readOnly(value: boolean) {
-		console.log('readOnly changed', value);
+		if (this._readOnly === value) {
+			return;
+		}
+
 		this._readOnly = value;
+		this.readOnlyChanged();
 	}
 
 	private valueAttributeChanged(value: string) {
