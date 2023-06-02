@@ -161,7 +161,7 @@ other updates aswell.
 
 We add the static class member observedAttributes() above the constructor,
 to watch for attributes changes.
-The methos should return an Array of strings, representing the attribute names.
+The method should return an Array of strings, representing the attribute names.
 Be careful, no uppercase characters!
 
 ```ts
@@ -170,7 +170,7 @@ public static get observedAttributes() {
 }
 ```
 
-And add the attributeChangedCallback() methos at the bottom of the class.
+And add the attributeChangedCallback() method at the bottom of the class.
 
 ```ts
 public attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
@@ -209,9 +209,7 @@ public attributeChangedCallback(name: string, oldValue: string | null, newValue:
 			break;
 		case 'readonly': this.readonlyAttributeChanged(newValue);
 			break;
-		default: {
-			break;
-		}
+		default: break;
 	}
 }
 ```
