@@ -290,7 +290,346 @@ public set value(value: number) {
 }
 ```
 
+Time to implement sub elements that will show the actual stars.
 
+So let's create a StarBold custom element that will show a single star / SVG graphics.
+
+```ts
+export default class StarBold extends HTMLElement {
+	public constructor() {
+		super();
+	}
+}
+customElements.define('star-bold', StarBold);
+```
+
+We are now entering OOP territory, where we will start to think about abstraction level.
+
+The size behavior for the star-rating element, indicates that the element will resize the 5 child stars
+and the parent element will expand / retract based on their size like a normal container.
+
+So setting the size attribute / property will pass down this value to the children, that will resize.
+
+We will create a ISizeable interface that both the star-rating and the star-bold element will implement.
+We cut the size from IStaRating and paste it into ISizeable like this.
+
+```ts
+export default interface ISizeable extends HTMLElement {
+	/**
+	 * The star size, valid values are 'small', 'medium' and 'large'.
+	 * small = 16px, medium = 24px and large = 32px.
+	 * Default value is 'medium'.
+	 */
+	size: 'small' | 'medium' | 'large';
+}
+```
+
+And implement this interface in both element classes.
+
+```ts
+export default class StarRating extends HTMLElement implements IStarRating, ISizeable
+
+export default class StarBold extends HTMLElement implements ISizeable
+```
+
+Typescript now yells at us, because StarBold doesn't have the size property, so let's implement that.
+Since the child elements will be referenced by the parent element directly, we don't have to think
+about implementing attribute syncronization, it's straight up properties.
+
+StarBold now look like this, we still guard for safety measures.
+
+```ts
+import ISizeable from './ISizeable';
+
+export default class StarBold extends HTMLElement implements ISizeable {
+	public constructor() {
+		super();
+	}
+
+	private sizeChanged() {
+		// implement
+	}
+
+	private _size: 'small' | 'medium' | 'large' = 'medium';
+
+	public get size() {
+		return this._size;
+	}
+
+	public set size(value: 'small' | 'medium' | 'large') {
+		if (this._size === value) {
+			return;
+		}
+
+		// We have guarded this setter with types but we could be called from javascript,
+		// so guard for correct values here aswell.
+		if (value === 'small' || value === 'medium' || value === 'large') {
+			this._size = value;
+			this.sizeChanged();
+		}
+	}
+}
+customElements.define('star-bold', StarBold);
+
+```
+
+Now lets create 5 stars-bold elements and add them as children of our star-rating element.
+This is done in the constructor, so they are instantiated outside the DOM.
+Remember when the browser sees the <star-rating></star-rating> tag, it will behind the scenes,
+call new StarRating() and append the instance to the document where the tag is positioned.
+
+```ts
+public constructor() {
+	super();
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+}
+```
+
+In the Elements tab in dev tools, we now see this.
+
+```html
+<star-rating>
+	<star-bold></star-bold>
+	<star-bold></star-bold>
+	<star-bold></star-bold>
+	<star-bold></star-bold>
+	<star-bold></star-bold>
+</star-rating>
+```
+
+We don't see anything on screen, so lets implement some physical size.
+
+In the StarBold class constructor we add.
+
+```ts
+public constructor() {
+	super();
+	this.style.width = '24px';
+	this.style.height = '24px';
+	this.style.display = 'inline-block';
+	this.style.background = '#d5e1e5';
+}
+```
+
+Which will show this.
+
+![](images/img_1.png)
+
+The star-rating element now has a size on screen 120px X 28px.
+
+We now need the star-rating element to display the children horizontally with gaps between, we use flex for that.
+
+In the StarRating constructor we now have this.
+
+```ts
+public constructor() {
+	super();
+	this.style.display = 'inline-flex';
+	this.style.gap = '4px';
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+}
+```
+
+And we now see this on screen.
+
+![](images/img_2.png)
+
+With something on the screen, we should now implement the actual resizing of the stars when the size changes.
+
+Lets first extract the code in the sizeChanged() method into a seperate method.
+
+From this.
+
+```ts
+private sizeChanged() {
+	// medium size is default, so only set the size attribute for small and large.
+	if (this.size === 'small' || this.size === 'large') {
+		this.setAttribute('size', this.size);
+	} else {
+		this.removeAttribute('size');
+	}
+}
+```
+
+To this.
+
+```ts
+private sizeChanged() {
+	this.updateSizeAttribute();
+}
+
+private updateSizeAttribute() {
+	// medium size is default, so only set the size attribute for small and large.
+	if (this.size === 'small' || this.size === 'large') {
+		this.setAttribute('size', this.size);
+	} else {
+		this.removeAttribute('size');
+	}
+}
+```
+
+We now update the children when the size changes.
+
+```ts
+private sizeChanged() {
+	this.updateChildrenSize();
+	this.updateSizeAttribute();
+}
+
+private updateChildrenSize() {
+	this.childNodes.forEach(child => {
+		// we check if the child is indeed a StarBold instance, some other tag
+		// could be added somehow, allways be safe than sorry.
+		if (child instanceof StarBold) {
+			child.size = this.size;
+		}
+	});
+}
+```
+
+In the StarBold class we implement resizing in the sizeChanged method.
+
+```ts
+private sizeChanged() {
+	// medium is the default size that maps to 24 pixel.
+	let px = 24;
+	if (this.size === 'small') {
+		px = 16;
+	} else if (this.size === 'large') {
+		px = 32;
+	}
+
+	this.style.width = px + 'px';
+	this.style.height = px + 'px';
+}
+```
+
+We now see this on screen.
+
+![](images/img_3.png)
+
+Now lets render some stars!
+
+The stars will be rendered using SVG, so lets implement that in the StarBold class.
+
+We first create a path getter that returns a SVGPathElement.
+
+```ts
+private _path!: SVGPathElement;
+
+private get path(): SVGPathElement {
+	if (!this._path) {
+		this._path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+	}
+	return this._path;
+}
+```
+
+Then we create a svg getter that returns a SVGSVGElement, with the path as a child.
+
+```ts
+private _svg!: SVGSVGElement;
+
+private get svg(): SVGSVGElement {
+	if (!this._svg) {
+		this._svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		this._svg.style.position = 'absolute';
+		this._svg.style.overflow = 'visible';
+		this._svg.setAttribute('fill', 'none');
+		this._svg.setAttribute('viewBox', '0 0 24 24');
+		this._svg.setAttribute('width', '24px');
+		this._svg.setAttribute('height', '24px');
+		this._svg.setAttribute('preserveAspectRatio', 'none');
+		this._svg.appendChild(this.path);
+	}
+
+	return this._svg;
+}
+```
+
+We add the svg as a child if the StarBold class in the constructor.
+
+```ts
+public constructor() {
+	super();
+	this.style.width = '24px';
+	this.style.height = '24px';
+	this.style.display = 'inline-block';
+	this.style.background = '#d5e1e5';
+	this.appendChild(this.svg);
+}
+```
+
+When the star-bold element resizes, the svg should be updated aswell.
+So we update the sizeChanged method to set the svg size.
+
+```ts
+private sizeChanged() {
+	// medium is default size that maps to 24 pixel.
+	let px = 24;
+	if (this.size === 'small') {
+		px = 16;
+	} else if (this.size === 'large') {
+		px = 32;
+	}
+
+	this.style.width = px + 'px';
+	this.style.height = px + 'px';
+	this.svg.style.width = px + 'px';
+	this.svg.style.height = px + 'px';
+}
+```
+
+When we are working with SVG, we should always see if we can compress the data without loss of quality.
+
+We have the star-bold.svg
+
+```html
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<path d="M4.07512 22.3085L6.21423 14.999L0.476607 10.1393C0.269663 9.96838 0.120233 9.73794 0.0485476 9.4792C-0.0231375 9.22047 -0.0136153 8.94595 0.0758251 8.69282C0.165265 8.43968 0.330304 8.22015 0.548596 8.06394C0.766889 7.90774 1.02789 7.82241 1.29627 7.8195H8.29337L10.7823 0.859942C10.8692 0.60817 11.0324 0.394579 11.2492 0.239984C11.466 0.0853893 11.7256 0 11.9918 0C12.2581 0 12.5177 0.0853893 12.7345 0.239984C12.9513 0.394579 13.1145 0.60817 13.2013 0.859942L15.7103 7.8695H22.7074C22.977 7.87512 23.2384 7.96323 23.4564 8.12197C23.6744 8.28072 23.8386 8.50247 23.9268 8.75737C24.015 9.01227 24.023 9.28809 23.9498 9.54768C23.8765 9.80728 23.7255 10.0382 23.5171 10.2093L17.6195 15.049L19.9086 22.2385C20.0126 22.4941 20.0319 22.7711 19.9638 23.0385C19.8956 23.3058 19.7436 23.5439 19.53 23.7184C19.3164 23.8929 19.0524 23.985 18.7769 23.9984C18.5014 24.0118 18.2289 23.9414 17.9994 23.7884L12.0148 19.7187L6.00432 23.7884C5.78082 23.9337 5.51778 24.0088 5.2514 23.9984C4.98503 23.988 4.72841 23.8907 4.51687 23.7284C4.30534 23.5661 4.14927 23.3431 4.07016 23.0885C3.99105 22.8338 3.99278 22.5621 4.07512 22.3085Z" fill="#292928"/>
+</svg>
+```
+
+Go to SVGOMG here https://jakearchibald.github.io/svgomg/ and paste in the svg.
+
+The bytes went from 679 to 253 bytes, that's 37% of the original size.
+It's now been reduced to this without quality loss.
+
+```html
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  	<path d="M4.08 22.3 6.2 15 .48 10.14a1.31 1.31 0 0 1 .82-2.32h7L10.77.86a1.28 1.28 0 0 1 2.42 0l2.51 7.01h7a1.32 1.32 0 0 1 .8 2.34l-5.9 4.84 2.3 7.19A1.27 1.27 0 0 1 18.78 24c-.28.01-.55-.06-.78-.21l-6-4.07-6 4.07a1.3 1.3 0 0 1-.76.2 1.3 1.3 0 0 1-1.17-1.68Z" fill="#292928"/>
+</svg>
+```
+
+We now copy the "d" attribute from the path tag and add it to the StarBold class in the path getter.
+
+```ts
+private get path(): SVGPathElement {
+	if (!this._path) {
+		this._path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+		this._path.setAttribute('fill', '#eba600');
+		this._path.setAttribute('d', 'M4.08 22.3 6.2 15 .48 10.14a1.31 1.31 0 0 1 .82-2.32h7L10.77.86a1.28 1.28 0 0 1 2.42 0l2.51 7.01h7a1.32 1.32 0 0 1 .8 2.34l-5.9 4.84 2.3 7.19A1.27 1.27 0 0 1 18.78 24c-.28.01-.55-.06-.78-.21l-6-4.07-6 4.07a1.3 1.3 0 0 1-.76.2 1.3 1.3 0 0 1-1.17-1.68Z');
+	}
+
+	return this._path;
+}
+```
+
+We now see this on screen.
+
+![](images/img_4.png)
+
+We remove the gray background from the star-bold element and we get this.
+
+![](images/img_5.png)
 
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.

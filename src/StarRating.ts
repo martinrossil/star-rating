@@ -1,12 +1,21 @@
+import ISizeable from './ISizeable';
 import IStarRating from './IStarRating';
+import StarBold from './StarBold';
 
-export default class StarRating extends HTMLElement implements IStarRating {
+export default class StarRating extends HTMLElement implements IStarRating, ISizeable {
 	public static get observedAttributes() {
 		return ['value', 'disabled', 'size', 'readonly'];
 	}
 
 	public constructor() {
 		super();
+		this.style.display = 'inline-flex';
+		this.style.gap = '4px';
+		this.appendChild(new StarBold());
+		this.appendChild(new StarBold());
+		this.appendChild(new StarBold());
+		this.appendChild(new StarBold());
+		this.appendChild(new StarBold());
 	}
 
 	private valueChanged() {
@@ -69,6 +78,21 @@ export default class StarRating extends HTMLElement implements IStarRating {
 	}
 
 	private sizeChanged() {
+		this.updateChildrenSize();
+		this.updateSizeAttribute();
+	}
+
+	private updateChildrenSize() {
+		this.childNodes.forEach(child => {
+			// we check if the child is indeed a StarBold instance, some other tag
+			// could be added somehow, allways be safe than sorry.
+			if (child instanceof StarBold) {
+				child.size = this.size;
+			}
+		});
+	}
+
+	private updateSizeAttribute() {
 		// medium size is default, so only set the size attribute for small and large.
 		if (this.size === 'small' || this.size === 'large') {
 			this.setAttribute('size', this.size);
