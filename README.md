@@ -655,6 +655,145 @@ And we get this.
 
 ![](images/img_6.png)
 
+## Half star / decimal implementation
+ClipPath masking to the rescue!
+
+ClipPath masking lets us use a path as masking for other elements, so now the path element will not be
+visible, but punch a "hole" an show the content underneath.
+
+We first change the path color to red, that is the standard color for the masking element.
+
+```ts
+private get path() {
+	if (!this._path) {
+		this._path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+		this._path.setAttribute('fill', '#FF0000');
+		this._path.setAttribute('d', 'M4.08 22.3 6.2 15 .48 10.14a1.31 1.31 0 0 1 .82-2.32h7L10.77.86a1.28 1.28 0 0 1 2.42 0l2.51 7.01h7a1.32 1.32 0 0 1 .8 2.34l-5.9 4.84 2.3 7.19A1.27 1.27 0 0 1 18.78 24c-.28.01-.55-.06-.78-.21l-6-4.07-6 4.07a1.3 1.3 0 0 1-.76.2 1.3 1.3 0 0 1-1.17-1.68Z');
+	}
+
+	return this._path;
+}
+```
+
+That will show this:
+
+![](images/img_7.png)
+
+We create a <rect> background element and append it to the SVG.
+
+```ts
+private get backgroundRect() {
+	if (!this._backgroundRect) {
+		this._backgroundRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+		this._backgroundRect.setAttribute('width', '100%');
+		this._backgroundRect.setAttribute('height', '100%');
+		this._backgroundRect.setAttribute('fill', '#d5e1e5');
+	}
+
+	return this._backgroundRect;
+}
+```
+
+Append it to the SVG underneath the star.
+
+```ts
+this._svg.appendChild(this.backgroundRect);
+this._svg.appendChild(this.path);
+```
+
+That will show this.
+
+![](images/img_8.png)
+
+We then create a value <rect> that will represent a value from 0 to 1 (0 to 100%)
+and append it above the background like this.
+
+Notice the width 50%, that will be a dynamic percentage later.
+
+```ts
+private get valueRect() {
+	if (!this._valueRect) {
+		this._valueRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+		this._valueRect.setAttribute('width', '50%');
+		this._valueRect.setAttribute('height', '100%');
+		this._valueRect.setAttribute('fill', '#eba600');
+	}
+
+	return this._valueRect;
+}
+```
+
+Append it to the SVG underneath the star and above the background.
+
+```ts
+this._svg.appendChild(this.backgroundRect);
+this._svg.appendChild(this.valueRect);
+this._svg.appendChild(this.path);
+```
+
+That will show this.
+
+![](images/img_9.png)
+
+We now create a clipPath element with the actual path element as a child, that we can target as a mask like this.
+
+```ts
+private _clipPath!: SVGClipPathElement;
+
+private get clipPath() {
+	if (!this._clipPath) {
+		this._clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+		this._clipPath.appendChild(this.path);
+	}
+
+	return this._clipPath;
+}
+```
+
+The path element is now a child of the clipPath element and not the svg element.
+So we remove the path from the svg and add the clipPath element as a child instead.
+
+```ts
+this._svg.appendChild(this.backgroundRect);
+this._svg.appendChild(this.valueRect);
+this._svg.appendChild(this.clipPath);
+```
+
+With this code, we will now see this.
+
+![](images/img_10.png)
+
+For an element to be masked, it has to set its clipPath style property to the "id" of the masking element, so we give the clipPath an id.
+
+```ts
+private get clipPath() {
+	if (!this._clipPath) {
+		this._clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+		this._clipPath.setAttribute('id', 'mask');
+		this._clipPath.appendChild(this.path);
+	}
+
+	return this._clipPath;
+}
+```
+
+And set the clipPath style properties of our rectangles to this.
+
+```ts
+this._backgroundRect.style.clipPath = 'url(#mask)';
+this._valueRect.style.clipPath = 'url(#mask)';
+```
+
+And we will now see this, which is exactly what we want.
+
+![](images/img_11.png)
+
+There is one catch regarding clipPath masking that you have to be aware of.
+
+The clipPath id is a global variable, so if you have more than one declared, which is very likely when using custom elements, you can end up using the wrong clipPath.
+
+So instead, give the id a random generated value instead of static "mask" in this case and point to that when setting the clipPath style property.
+
 
 
 ## Production build
