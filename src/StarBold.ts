@@ -1,6 +1,7 @@
 import ISizeable from './ISizeable';
+import IStar from './IStar';
 
-export default class StarBold extends HTMLElement implements ISizeable {
+export default class StarBold extends HTMLElement implements ISizeable, IStar {
 	public constructor() {
 		super();
 		this.style.width = '24px';
@@ -86,7 +87,6 @@ export default class StarBold extends HTMLElement implements ISizeable {
 	private get valueRect() {
 		if (!this._valueRect) {
 			this._valueRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-			this._valueRect.setAttribute('width', '50%');
 			this._valueRect.setAttribute('height', '100%');
 			this._valueRect.setAttribute('fill', '#eba600');
 			this._valueRect.style.clipPath = 'url(#mask)';
@@ -112,6 +112,35 @@ export default class StarBold extends HTMLElement implements ISizeable {
 		}
 
 		return this._svg;
+	}
+
+	private valueChanged() {
+		// We can be certain that this.value is a value from 0 to 1,
+		// so we can safely convert it to a percentage string respresentation.
+		const percent = Math.floor(this.value * 100).toString() + '%';
+		// And set the width attribute of the valueRect to this percent.
+		this.valueRect.setAttribute('width', percent);
+	}
+
+	private _value = 0;
+
+	public get value() {
+		return this._value;
+	}
+
+	public set value(value: number) {
+		if (this._value === value) {
+			return;
+		}
+
+		if (isNaN(value) || value < 0 || value > 1) {
+			this._value = 0;
+			this.valueChanged();
+			return;
+		}
+
+		this._value = value;
+		this.valueChanged();
 	}
 }
 customElements.define('star-bold', StarBold);

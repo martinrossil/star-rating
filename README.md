@@ -794,6 +794,107 @@ The clipPath id is a global variable, so if you have more than one declared, whi
 
 So instead, give the id a random generated value instead of static "mask" in this case and point to that when setting the clipPath style property.
 
+## Correct value rendering of the stars
+
+Each star is now rendering (50%), which is not correct, so lets first remove the 50% width of the valueRect, so we only have 100% height.
+
+```ts
+private get valueRect() {
+	if (!this._valueRect) {
+		this._valueRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+		this._valueRect.setAttribute('height', '100%');
+		this._valueRect.setAttribute('fill', '#eba600');
+		this._valueRect.style.clipPath = 'url(#mask)';
+	}
+
+	return this._valueRect;
+}
+```
+
+We now create an IStar interface, that demands a value property like this.
+
+```ts
+export default interface IStar extends HTMLElement {
+	/**
+	 * Sets the current star rating, valid values are 0 - 1, both inclusive.
+	 * Default value is 0.
+	 */
+	value: number;
+}
+```
+
+And implement this interface in the StarBold class like this.
+
+```ts
+export default class StarBold extends HTMLElement implements ISizeable, IStar
+```
+
+Typescript errors with.
+
+```shell
+Class 'StarBold' incorrectly implements interface 'IStar'. Property 'value' is missing in type 'StarBold' but required in type 'IStar'.
+```
+
+So lets implement the value setter and getter like this.
+
+```ts
+private _value = 0;
+
+public get value() {
+	return this._value;
+}
+
+public set value(value: number) {
+	if (this._value === value) {
+		return;
+	}
+
+	if (isNaN(value) || value < 0 || value > 1) {
+		this._value = 0;
+		return;
+	}
+
+	this._value = value;
+}
+```
+
+This doesn't do anything, so lets implement a valueChanged method.
+
+```ts
+private valueChanged() {
+	// We are certain that this.value is a value from 0 to 1,
+	// so we can safely convert it to a percentage string respresentation.
+	const percent = Math.floor(this.value * 100).toString() + '%';
+	// And set the width attribute of the valueRect to this percent.
+	this.valueRect.setAttribute('width', percent);
+}
+```
+
+And add the calls to the value setter.
+
+```ts
+public set value(value: number) {
+	if (this._value === value) {
+		return;
+	}
+
+	if (isNaN(value) || value < 0 || value > 1) {
+		this._value = 0;
+		this.valueChanged();
+		return;
+	}
+
+	this._value = value;
+	this.valueChanged();
+}
+```
+
+We will now see this.
+
+![](images/img_12.png)
+
+## Implementing <star-rating> value property / attribute to show stars correctly
+
 
 
 ## Production build
