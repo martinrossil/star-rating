@@ -1,10 +1,11 @@
+import IColorable from './IColorable';
 import ISizeable from './ISizeable';
 import IStarRating from './IStarRating';
 import StarBold from './StarBold';
 
-export default class StarRating extends HTMLElement implements IStarRating, ISizeable {
+export default class StarRating extends HTMLElement implements IStarRating, ISizeable, IColorable {
 	public static get observedAttributes() {
-		return ['value', 'disabled', 'size', 'readonly'];
+		return ['value', 'disabled', 'size', 'readonly', 'color'];
 	}
 
 	public constructor() {
@@ -146,6 +147,14 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		}
 	}
 
+	private updateChildrenColor() {
+		this.childNodes.forEach(child => {
+			if (child instanceof StarBold) {
+				child.color = this.color;
+			}
+		});
+	}
+
 	private _size: 'small' | 'medium' | 'large' = 'medium';
 
 	public get size() {
@@ -188,6 +197,25 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.readOnlyChanged();
 	}
 
+	private colorChanged() {
+		this.updateChildrenColor();
+	}
+
+	private _color = '';
+
+	public get color() {
+		return this._color;
+	}
+
+	public set color(value: string) {
+		if (this._color === value) {
+			return;
+		}
+
+		this._color = value;
+		this.colorChanged();
+	}
+
 	private valueAttributeChanged(value: string) {
 		this.value = parseFloat(value);
 	}
@@ -206,6 +234,10 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.readOnly = value === '';
 	}
 
+	private colorAttributeChanged(value: string) {
+		this.color = value;
+	}
+
 	public attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
 		switch (name) {
 			case 'value': this.valueAttributeChanged(newValue);
@@ -215,6 +247,8 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			case 'size': this.sizeAttributeChanged(newValue);
 				break;
 			case 'readonly': this.readonlyAttributeChanged(newValue);
+				break;
+			case 'color': this.colorAttributeChanged(newValue);
 				break;
 			default: break;
 		}

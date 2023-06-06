@@ -1,7 +1,8 @@
+import IColorable from './IColorable';
 import ISizeable from './ISizeable';
 import IStar from './IStar';
 
-export default class StarBold extends HTMLElement implements ISizeable, IStar {
+export default class StarBold extends HTMLElement implements ISizeable, IStar, IColorable {
 	public constructor() {
 		super();
 		this.style.width = '24px';
@@ -42,6 +43,25 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar {
 			this._size = value;
 			this.sizeChanged();
 		}
+	}
+
+	private colorChanged() {
+		this.valueRect.setAttribute('fill', this.color);
+	}
+
+	private _color = '#000';
+
+	public get color() {
+		return this._color;
+	}
+
+	public set color(value: string) {
+		if (this._color === value) {
+			return;
+		}
+
+		this._color = value;
+		this.colorChanged();
 	}
 
 	private _path!: SVGPathElement;

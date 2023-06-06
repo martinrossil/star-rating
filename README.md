@@ -920,9 +920,154 @@ this.value = 0.75;
 
 ## Implementing <star-rating> value property / attribute to show stars correctly
 
+We now head over to the <star-rating> element, where we have the valueChanged() method,
+that currently updated the value attribute.
 
+```ts
+private valueChanged() {
+	if (isNaN(this.value)) {
+		this.removeAttribute('value');
+	} else {
+		this.setAttribute('value', this.value.toString());
+	}
+}
+```
 
+This method now has to update the child stars values aswell.
+We know that that the value passed in is NaN or values from 0 to 5, so lets
+first create a updateChildStarsValues() method.
 
+```ts
+private updateChildStarsValues() {
+	
+}
+```
+
+And call it from the valueChanged() method.
+
+```ts
+private valueChanged() {
+	if (isNaN(this.value)) {
+		this.removeAttribute('value');
+	} else {
+		this.setAttribute('value', this.value.toString());
+	}
+
+	this.updateChildStarsValues();
+}
+```
+
+We first check to see if the value is NaN, which will set all the star values to 0, so we create a seperate method for that.
+
+```ts
+private resetAllChildStarValues() {
+	this.childNodes.forEach(star => {
+		if (star instanceof StarBold) {
+			star.value = 0;
+		}
+	});
+}
+```
+
+And call it if we have a NaN value.
+
+```ts
+private updateChildStarsValues() {
+	if (isNaN(this.value)) {
+		this.resetAllChildStarValues();
+	}
+}
+```
+
+Otherwise we loop over the stars and update their values with a new setStarValues() method.
+
+```ts
+private setStarValues() {
+	const integer = Math.floor(this.value);
+	let decimal = parseFloat((this.value - integer).toFixed(1));
+	this.childNodes.forEach((star, index) => {
+		if (star instanceof StarBold) {
+			if ((index + 1) <= this.value) {
+				star.value = 1;
+			} else {
+				star.value = decimal;
+				decimal = 0;
+			}
+		}
+	});
+}
+```
+
+And we add the setStarValues() call.
+
+```ts
+private updateChildStarsValues() {
+	if (isNaN(this.value)) {
+		this.resetAllChildStarValues();
+	} else {
+		this.setStarValues();
+	}
+}
+```
+
+Which will result in the star values being shown correctly.
+
+![](images/img_14.png)
+
+## Defining custom colors
+
+The values for colors are hard typed, we should change this.
+So we create a color properties / attributes interface IColorable.
+
+```ts
+export default interface IColorable extends HTMLElement {
+	/**
+	 * The color of the star value rectangle.
+	 */
+	color: string;
+
+	/**
+	 * The disabled color of the star value rectangle.
+	 */
+	disabledColor: string;
+
+	/**
+	 * The background color of the star background rectangle.
+	 */
+	backgroundColor: string;
+}
+```
+
+And implement this interface in the StarRating and StarBold classes.
+
+```ts
+export default class StarRating extends HTMLElement implements IStarRating, ISizeable, IColorable
+
+export default class StarBold extends HTMLElement implements ISizeable, IStar, IColorable
+```
+
+We jump over the implementation details, that can be read in the source code.
+
+So if we change the html to this.
+
+```html
+<div class="card">
+	<star-rating value="4.7" size="large" color="red"></star-rating>
+	<p>Large (L) value 4.7 red</p>
+</div>
+<div class="card">
+	<star-rating value="3.5" size="medium" color="blue"></star-rating>
+	<p>Medium (M) value 3.5 blue</p>
+</div>
+<div class="card">
+	<star-rating value="1.8" size="small" color="purple"></star-rating>
+	<p>Small (S) value 1.8 purple</p>
+</div>
+```
+
+We get this.
+
+![](images/img_15.png)
 
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
