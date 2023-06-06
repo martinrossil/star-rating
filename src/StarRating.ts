@@ -18,12 +18,45 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.appendChild(new StarBold());
 	}
 
+	private resetAllChildStarValues() {
+		this.childNodes.forEach(star => {
+			if (star instanceof StarBold) {
+				star.value = 0;
+			}
+		});
+	}
+
+	private setStarValues() {
+		const integer = Math.floor(this.value);
+		let decimal = parseFloat((this.value - integer).toFixed(1));
+		this.childNodes.forEach((star, index) => {
+			if (star instanceof StarBold) {
+				if ((index + 1) <= this.value) {
+					star.value = 1;
+				} else {
+					star.value = decimal;
+					decimal = 0;
+				}
+			}
+		});
+	}
+
+	private updateChildStarsValues() {
+		if (isNaN(this.value)) {
+			this.resetAllChildStarValues();
+		} else {
+			this.setStarValues();
+		}
+	}
+
 	private valueChanged() {
 		if (isNaN(this.value)) {
 			this.removeAttribute('value');
 		} else {
 			this.setAttribute('value', this.value.toString());
 		}
+
+		this.updateChildStarsValues();
 	}
 
 	private _value = NaN;
