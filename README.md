@@ -893,7 +893,34 @@ We will now see this.
 
 ![](images/img_12.png)
 
+Lets test it to see if the implementation is correct.
+
+In the StarBold constructor, we set the value to 0.75 to test.
+
+```ts
+public constructor() {
+	super();
+	this.style.width = '24px';
+	this.style.height = '24px';
+	this.style.display = 'inline-block';
+	this.appendChild(this.svg);
+	this.value = 0.75;
+}
+```
+
+And we see this, which is correct.
+
+![](images/img_13.png)
+
+We remember to remove this in the constructor.
+
+```ts
+this.value = 0.75;
+```
+
 ## Implementing <star-rating> value property / attribute to show stars correctly
+
+
 
 
 
