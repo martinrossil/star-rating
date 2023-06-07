@@ -5,7 +5,7 @@ import StarBold from './StarBold';
 
 export default class StarRating extends HTMLElement implements IStarRating, ISizeable, IColorable {
 	public static get observedAttributes() {
-		return ['value', 'disabled', 'size', 'readonly', 'color'];
+		return ['value', 'disabled', 'size', 'readonly', 'color', 'disabled-color'];
 	}
 
 	public constructor() {
@@ -94,6 +94,16 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		} else {
 			this.removeAttribute('disabled');
 		}
+
+		this.updateChildrenDisabled();
+	}
+
+	private updateChildrenDisabled() {
+		this.childNodes.forEach(child => {
+			if (child instanceof StarBold) {
+				child.disabled = this.disabled;
+			}
+		});
 	}
 
 	private _disabled = false;
@@ -155,6 +165,14 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		});
 	}
 
+	private updateChildrenDisabledColor() {
+		this.childNodes.forEach(child => {
+			if (child instanceof StarBold) {
+				child.disabledColor = this.disabledColor;
+			}
+		});
+	}
+
 	private _size: 'small' | 'medium' | 'large' = 'medium';
 
 	public get size() {
@@ -201,7 +219,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.updateChildrenColor();
 	}
 
-	private _color = '';
+	private _color = '#000';
 
 	public get color() {
 		return this._color;
@@ -214,6 +232,25 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 
 		this._color = value;
 		this.colorChanged();
+	}
+
+	private disabledColorChanged() {
+		this.updateChildrenDisabledColor();
+	}
+
+	private _disabledColor = '';
+
+	public get disabledColor() {
+		return this._disabledColor;
+	}
+
+	public set disabledColor(value: string) {
+		if (this._disabledColor === value) {
+			return;
+		}
+
+		this._disabledColor = value;
+		this.disabledColorChanged();
 	}
 
 	private valueAttributeChanged(value: string) {
@@ -238,6 +275,10 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.color = value;
 	}
 
+	private disabledColorAttributeChanged(value: string) {
+		this.disabledColor = value;
+	}
+
 	public attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
 		switch (name) {
 			case 'value': this.valueAttributeChanged(newValue);
@@ -249,6 +290,8 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			case 'readonly': this.readonlyAttributeChanged(newValue);
 				break;
 			case 'color': this.colorAttributeChanged(newValue);
+				break;
+			case 'disabled-color': this.disabledColorAttributeChanged(newValue);
 				break;
 			default: break;
 		}

@@ -1,8 +1,9 @@
 import IColorable from './IColorable';
+import IDisabledable from './IDisabledable';
 import ISizeable from './ISizeable';
 import IStar from './IStar';
 
-export default class StarBold extends HTMLElement implements ISizeable, IStar, IColorable {
+export default class StarBold extends HTMLElement implements ISizeable, IStar, IColorable, IDisabledable {
 	public constructor() {
 		super();
 		this.style.width = '24px';
@@ -46,7 +47,9 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 	}
 
 	private colorChanged() {
-		this.valueRect.setAttribute('fill', this.color);
+		if (!this.disabled) {
+			this.valueRect.setAttribute('fill', this.color);
+		}
 	}
 
 	private _color = '#000';
@@ -62,6 +65,50 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 
 		this._color = value;
 		this.colorChanged();
+	}
+
+	private disabledColorChanged() {
+		if (this.disabled) {
+			this.valueRect.setAttribute('fill', this.disabledColor);
+		}
+	}
+
+	private _disabledColor = '';
+
+	public get disabledColor() {
+		return this._disabledColor;
+	}
+
+	public set disabledColor(value: string) {
+		if (this._disabledColor === value) {
+			return;
+		}
+
+		this._disabledColor = value;
+		this.disabledColorChanged();
+	}
+
+	private disabledChanged() {
+		if (this.disabled) {
+			this.valueRect.setAttribute('fill', this.disabledColor);
+		} else {
+			this.valueRect.setAttribute('fill', this.color);
+		}
+	}
+
+	private _disabled = false;
+
+	public get disabled() {
+		return this._disabled;
+	}
+
+	public set disabled(value: boolean) {
+		if (this._disabled === value) {
+			return;
+		}
+
+		this._disabled = value;
+		this.disabledChanged();
 	}
 
 	private _path!: SVGPathElement;
