@@ -1203,5 +1203,3 @@ private updateAriaLabelProperty() {
 
 ## Bundling the element javascript
 Bundling Typescript is a science on its own, but in this case, rollup will be used together with the google closure compiler that is by far, the most agressive minifier out there.
-
-re deploy test
