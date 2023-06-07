@@ -227,7 +227,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.updateChildrenColor();
 	}
 
-	private _color = '#000';
+	private _color = '#eba600';
 
 	public get color() {
 		return this._color;
