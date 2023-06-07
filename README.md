@@ -1074,5 +1074,101 @@ and apply it to the Medium element, we get this.
 
 ![](images/img_16.png)
 
+## Accessibility (A11Y)
+
+To make the <star-rating> element accessible, we need to implement a few things.
+
+The first thing is to set the tabindex property to 0.
+In the StarRating constructor.
+
+```ts
+public constructor() {
+	super();
+	this.style.display = 'inline-flex';
+	this.style.gap = '8px';
+	this.tabIndex = 0;
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+}
+```
+
+Which gives us a tab enabled element with a focus rectangle.
+
+![](images/img_17.png)
+
+We then add a focus and blur eventListener that we can use for a better focus experience.
+In the StarRating constructor.
+
+```ts
+public constructor() {
+	super();
+	this.style.display = 'inline-flex';
+	this.style.gap = '8px';
+	this.tabIndex = 0;
+	this.addEventListener('focus', this.focused);
+	this.addEventListener('blur', this.blurred);
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+	this.appendChild(new StarBold());
+}
+```
+
+We create the event listeners.
+
+```ts
+private focused() {
+	this.style.outline = 'solid 2px red';
+}
+
+private blurred() {
+	this.style.outline = 'none';
+}
+```
+
+That will give us this.
+
+![](images/img_18.png)
+
+But we can do better, so we set the outlineOffset property based upon the size property.
+So when the size changes, we call the updateOutlineOffset().
+
+```ts
+private sizeChanged() {
+	this.updateGapBetweenStars();
+	this.updateChildrenSize();
+	this.updateSizeAttribute();
+	this.updateOutlineOffset();
+}
+
+private updateOutlineOffset() {
+	let offset = 8;
+	if (this.size === 'small') {
+		offset = 4;
+	} else if (this.size === 'large') {
+		offset = 12;
+	}
+
+	this.style.outlineOffset = offset + 'px';
+}
+```
+
+Which will reveal these rectangles when focused.
+
+![](images/img_19.png)
+
+This is still not good enough, so we add a dynamic border radius when the size changes.
+That will show the focused state like this in various sizes.
+
+![](images/img_20.png)
+
+Regarding color, we can do better, so syncronize the focus color to match the color or disabledColor property and we get this.
+
+
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.

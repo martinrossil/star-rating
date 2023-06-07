@@ -12,11 +12,24 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		super();
 		this.style.display = 'inline-flex';
 		this.style.gap = '8px';
+		this.style.outlineOffset = '8px';
+		this.style.borderRadius = '20px';
+		this.tabIndex = 0;
+		this.addEventListener('focus', this.focused);
+		this.addEventListener('blur', this.blurred);
 		this.appendChild(new StarBold());
 		this.appendChild(new StarBold());
 		this.appendChild(new StarBold());
 		this.appendChild(new StarBold());
 		this.appendChild(new StarBold());
+	}
+
+	private focused() {
+		this.style.outline = 'solid 2px red';
+	}
+
+	private blurred() {
+		this.style.outline = 'none';
 	}
 
 	private resetAllChildStarValues() {
@@ -125,6 +138,8 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.updateGapBetweenStars();
 		this.updateChildrenSize();
 		this.updateSizeAttribute();
+		this.updateOutlineOffset();
+		this.updateBorderRadius();
 	}
 
 	private updateGapBetweenStars() {
@@ -155,6 +170,28 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		} else {
 			this.removeAttribute('size');
 		}
+	}
+
+	private updateOutlineOffset() {
+		let offset = 8;
+		if (this.size === 'small') {
+			offset = 4;
+		} else if (this.size === 'large') {
+			offset = 12;
+		}
+
+		this.style.outlineOffset = offset + 'px';
+	}
+
+	private updateBorderRadius() {
+		let radius = 20;
+		if (this.size === 'small') {
+			radius = 12;
+		} else if (this.size === 'large') {
+			radius = 28;
+		}
+
+		this.style.borderRadius = radius + 'px';
 	}
 
 	private updateChildrenColor() {
