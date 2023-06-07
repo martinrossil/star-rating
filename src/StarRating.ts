@@ -25,7 +25,11 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 	}
 
 	private focused() {
-		this.style.outline = 'solid 2px red';
+		if (this.disabled) {
+			this.style.outline = 'solid 2px ' + this.disabledColor;
+		} else {
+			this.style.outline = 'solid 2px ' + this.color;
+		}
 	}
 
 	private blurred() {
