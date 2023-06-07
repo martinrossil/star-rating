@@ -1084,6 +1084,73 @@ and apply it to the Medium element, we get this.
 
 ![](images/img_16.png)
 
+### Mouse / keyboard support
+When elements has to notify parents about internal changes, user events, etc, we use Custom or extended Events.
+
+Since the <star-rating> has to be notified by child elements about mouseover, mouseleave and click events, we add listeners for these events in the StarBold constructor. And also set the cursor to 'pointer'.
+
+```ts
+public constructor() {
+	super();
+	this.style.width = '24px';
+	this.style.height = '24px';
+	this.style.display = 'inline-block';
+	this.style.cursor = 'pointer';
+	this.appendChild(this.svg);
+	this.addEventListeners();
+}
+
+private addEventListeners() {
+	this.addEventListener('mouseover', this.mouseOver);
+	this.addEventListener('mouseleave', this.mouseLeave);
+	this.addEventListener('click', this.clicked);
+}
+```
+
+We need to add a star index value for each of the child star elements, so when the <star-rating> element, recieves an Event from one of the children, it knows which one it is, since we don't have a hard reference to the children.
+
+So lets use the StarBold constructor to pass in this value.
+
+In the <star-rating> constructor we pass in the star value.
+
+```ts
+this.appendChild(new StarBold(1));
+this.appendChild(new StarBold(2));
+this.appendChild(new StarBold(3));
+this.appendChild(new StarBold(4));
+this.appendChild(new StarBold(5));
+```
+
+And inside the StarBold constructor, we add the starValue parameter.
+```ts
+public constructor(starValue: number) {
+	super();
+	this.starValue = starValue;
+}
+
+private starValue: number;
+```
+
+We can now dispatch a CustomEvent with this the detail property set to this value and bubbles set to true, so the parent element will recieve the Event and we have loose coupling between parent child.
+
+```ts
+private mouseOver() {
+	this.dispatchEvent(new CustomEvent('STAR_MOUSE_OVER', {detail: this.starValue, bubbles: true}));
+}
+```
+
+In the parent <star-rating> element, we add a listener for 'STAR_MOUSE_OVER' in the constructor. Note: We have to cast the listener method to EventListener, because we use CustomEvent<number> as the parameter type, which TypeScript doesn't accept as a pure Event listener.
+
+```ts
+this.addEventListener('STAR_MOUSE_OVER', this.starMouseOver as EventListener);
+
+private starMouseOver(e: CustomEvent<number>)
+```
+
+The mouseLeave and click events are added aswell and caught in the <star-rating> parent element.
+
+
+
 ### Accessibility (A11Y)
 
 To make the <star-rating> element accessible, we need to implement a few things.
@@ -1204,7 +1271,7 @@ private updateAriaLabelProperty() {
 ## Bundling the element javascript
 Bundling Typescript is a science on its own, but in this case, rollup will be used together with the google closure compiler that is by far, the most agressive minifier out there.
 
-A npm run build command, will produce this output.
+A 'npm run' build command, will produce this output.
 
 ![](images/img_22.png)
 
