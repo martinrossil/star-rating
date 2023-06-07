@@ -1166,9 +1166,9 @@ That will show the focused state like this in various sizes.
 
 ![](images/img_20.png)
 
-Regarding color, we can do better, so syncronize the focus color to match the color or disabledColor property and we get this.
+Regarding color, we can do better, so we syncronize the focus color to match the color or disabledColor property and we get this.
 
-
+![](images/img_21.png)
 
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
