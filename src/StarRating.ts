@@ -12,8 +12,8 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 	public constructor() {
 		super();
 		this.style.display = 'inline-flex';
-		this.style.gap = '8px';
-		this.style.outlineOffset = '8px';
+		this.style['gap'] = '8px';
+		this.style['outlineOffset'] = '8px';
 		this.style.borderRadius = '20px';
 		this.tabIndex = 0;
 		this.addEventListener('focus', this.focused);
