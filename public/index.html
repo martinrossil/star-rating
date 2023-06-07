@@ -1,54 +1,4 @@
-import clear from 'rollup-plugin-clear';
-import resolve from '@rollup/plugin-node-resolve';
-import copy from 'rollup-plugin-copy';
-import strip from '@rollup/plugin-strip';
-import filesize from 'rollup-plugin-filesize';
-import html from '@rollup/plugin-html';
-import compiler from '@ampproject/rollup-plugin-closure-compiler';
-import typescript from 'rollup-plugin-typescript2';
 
-export default [{
-    input: './src/StarRating.ts',
-    plugins: [
-        clear({ targets: ['public'] }),
-        resolve(),
-        copy({
-            targets: [
-                {
-                    src: 'assets/**/**.*',
-                    dest: 'public',
-                },
-            ],
-        }),
-        typescript({tsconfig: 'tsconfig.build.json'}),
-        compiler({
-            language_in: 'ECMASCRIPT_2020',
-            compilation_level: 'ADVANCED',
-            language_out: 'ECMASCRIPT_2015'
-        }),
-
-        strip({ include: '**/*.(js|ts)' }),
-        filesize({ showBrotliSize: true }),
-        html({ template }),
-    ],
-    output: {
-        dir: 'public',
-        entryFileNames: '[name].[hash].js',
-        format: 'esm',
-    },
-}];
-
-function template({ files }) {
-    let main = '';
-    const chunks = files.js;
-    for (const chunk of chunks) {
-        const fileName = chunk.fileName;
-        if (fileName.startsWith('Star')) {
-            main = fileName;
-            break;
-        }
-    }
-    return `
     <!DOCTYPE html>
     <html lang="da">
         <head>
@@ -83,8 +33,7 @@ function template({ files }) {
                 <star-rating id="disabledStar" disabled value="3.7" disabled-color="#b8b8b7"></star-rating>
                 <p aria-hidden="true">3.7 disabled</p>
             </div>
-            <script type="module" src="${main}" defer></script>
+            <script type="module" src="StarRating.9be44123.js" defer></script>
         </body>
     </html>
-    `;
-}
+    

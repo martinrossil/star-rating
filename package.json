@@ -9,6 +9,7 @@
     "check": "echo 'type checking all *.ts files...' && tsc"
   },
   "devDependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.27.0",
     "@rollup/plugin-html": "^1.0.2",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-strip": "^3.0.2",
