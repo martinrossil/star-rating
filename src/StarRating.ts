@@ -63,14 +63,28 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		}
 	}
 
-	private valueChanged() {
+	private updateValueAttribute() {
 		if (isNaN(this.value)) {
 			this.removeAttribute('value');
 		} else {
 			this.setAttribute('value', this.value.toString());
 		}
+	}
 
+	private updateAriaLabelProperty() {
+		const valueWithComma = this.value.toString().replace('.', ',');
+		let label = 'Stjerne Rating ' + valueWithComma + ' ud af 5';
+		if (this.disabled) {
+			label += ' deaktiveret';
+		}
+
+		this.ariaLabel = label;
+	}
+
+	private valueChanged() {
+		this.updateValueAttribute();
 		this.updateChildStarsValues();
+		this.updateAriaLabelProperty();
 	}
 
 	private _value = NaN;

@@ -1170,5 +1170,26 @@ Regarding color, we can do better, so we syncronize the focus color to match the
 
 ![](images/img_21.png)
 
+The last thing we need to help the Screen Reader, is to implement the ariaLabel property.
+So when the value changes, we also update the ariaLabel property.
+
+```ts
+private valueChanged() {
+	this.updateValueAttribute();
+	this.updateChildStarsValues();
+	this.updateAriaLabelProperty();
+}
+
+private updateAriaLabelProperty() {
+	const valueWithComma = this.value.toString().replace('.', ',');
+	let label = 'Stjerne Rating ' + valueWithComma + ' ud af 5';
+	if (this.disabled) {
+		label += ' deaktiveret';
+	}
+
+	this.ariaLabel = label;
+}
+```
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
