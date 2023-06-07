@@ -3,7 +3,6 @@ import ISizeable from './ISizeable';
 import IStarRating from './IStarRating';
 import StarBold from './StarBold';
 
-// forcing deploy
 export default class StarRating extends HTMLElement implements IStarRating, ISizeable, IColorable {
 	public static get observedAttributes() {
 		return ['value', 'disabled', 'size', 'color', 'disabled-color', 'background-color'];
