@@ -84,6 +84,7 @@ function template({ files }) {
                 <p aria-hidden="true">3.7 disabled</p>
             </div>
             <script type="module" src="${main}" defer></script>
+            <!-- forcing deployment -->
         </body>
     </html>
     `;
