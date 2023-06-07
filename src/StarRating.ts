@@ -18,11 +18,34 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.tabIndex = 0;
 		this.addEventListener('focus', this.focused);
 		this.addEventListener('blur', this.blurred);
-		this.appendChild(new StarBold());
-		this.appendChild(new StarBold());
-		this.appendChild(new StarBold());
-		this.appendChild(new StarBold());
-		this.appendChild(new StarBold());
+		this.addEventListeners();
+		this.appendChild(new StarBold(1));
+		this.appendChild(new StarBold(2));
+		this.appendChild(new StarBold(3));
+		this.appendChild(new StarBold(4));
+		this.appendChild(new StarBold(5));
+	}
+
+	private addEventListeners() {
+		this.addEventListener('STAR_MOUSE_OVER', this.starMouseOver as EventListener);
+		this.addEventListener('STAR_MOUSE_LEAVE', this.starMouseLeave as EventListener);
+		this.addEventListener('STAR_CLICKED', this.starClicked as EventListener);
+	}
+
+	private originalValue = NaN;
+
+	private starMouseOver(e: CustomEvent<number>) {
+		this.value = e.detail;
+	}
+
+	private starMouseLeave(e: CustomEvent<number>) {
+		this.value = this.originalValue;
+	}
+
+	private starClicked(e: CustomEvent<number>) {
+		this.originalValue = e.detail;
+		this.value = e.detail;
+		this.dispatchEvent(new CustomEvent('STAR_SELECTED', {detail: this.value, bubbles: true}));
 	}
 
 	private focused() {
@@ -68,6 +91,12 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		}
 	}
 
+	private updateOriginalValue() {
+		if (isNaN(this.originalValue)) {
+			this.originalValue = this.value;
+		}
+	}
+
 	private updateValueAttribute() {
 		if (isNaN(this.value)) {
 			this.removeAttribute('value');
@@ -87,6 +116,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 	}
 
 	private valueChanged() {
+		this.updateOriginalValue();
 		this.updateValueAttribute();
 		this.updateChildStarsValues();
 		this.updateAriaLabelProperty();

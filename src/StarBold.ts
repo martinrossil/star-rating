@@ -4,12 +4,35 @@ import ISizeable from './ISizeable';
 import IStar from './IStar';
 
 export default class StarBold extends HTMLElement implements ISizeable, IStar, IColorable, IDisabledable {
-	public constructor() {
+	public constructor(starValue: number) {
 		super();
+		this.starValue = starValue;
 		this.style.width = '24px';
 		this.style.height = '24px';
 		this.style.display = 'inline-block';
+		this.style.cursor = 'pointer';
 		this.appendChild(this.svg);
+		this.addEventListeners();
+	}
+
+	private readonly starValue: number;
+
+	private addEventListeners() {
+		this.addEventListener('mouseover', this.mouseOver);
+		this.addEventListener('mouseleave', this.mouseLeave);
+		this.addEventListener('click', this.clicked);
+	}
+
+	private mouseOver() {
+		this.dispatchEvent(new CustomEvent('STAR_MOUSE_OVER', {detail: this.starValue, bubbles: true}));
+	}
+
+	private mouseLeave() {
+		this.dispatchEvent(new CustomEvent('STAR_MOUSE_LEAVE', {detail: this.starValue, bubbles: true}));
+	}
+
+	private clicked() {
+		this.dispatchEvent(new CustomEvent('STAR_CLICKED', {detail: this.starValue, bubbles: true}));
 	}
 
 	private sizeChanged() {
@@ -181,6 +204,20 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 		return this._valueRect;
 	}
 
+	private _hitAreaRect!: SVGRectElement;
+
+	private get hitAreaRect() {
+		if (!this._hitAreaRect) {
+			this._hitAreaRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+			this._hitAreaRect.setAttribute('width', '100%');
+			this._hitAreaRect.setAttribute('height', '100%');
+			this._hitAreaRect.setAttribute('fill', 'red');
+			this._hitAreaRect.setAttribute('opacity', '0');
+		}
+
+		return this._hitAreaRect;
+	}
+
 	private _svg!: SVGSVGElement;
 
 	private get svg() {
@@ -195,6 +232,7 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 			this._svg.appendChild(this.backgroundRect);
 			this._svg.appendChild(this.valueRect);
 			this._svg.appendChild(this.clipPath);
+			this._svg.appendChild(this.hitAreaRect);
 		}
 
 		return this._svg;
