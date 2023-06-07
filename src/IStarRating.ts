@@ -11,10 +11,4 @@ export default interface IStarRating extends HTMLElement {
 	 * Default value is false.
 	 */
 	disabled: boolean;
-
-	/**
-	 * A boolean value that sets if the element is read only or not.
-	 * Default value is false.
-	 */
-	readOnly: boolean;
 }

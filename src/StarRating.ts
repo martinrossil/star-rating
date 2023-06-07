@@ -6,7 +6,7 @@ import StarBold from './StarBold';
 // forcing deploy
 export default class StarRating extends HTMLElement implements IStarRating, ISizeable, IColorable {
 	public static get observedAttributes() {
-		return ['value', 'disabled', 'size', 'readonly', 'color', 'disabled-color', 'background-color'];
+		return ['value', 'disabled', 'size', 'color', 'disabled-color', 'background-color'];
 	}
 
 	public constructor() {
@@ -286,29 +286,6 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		}
 	}
 
-	private readOnlyChanged() {
-		if (this.readOnly) {
-			this.setAttribute('readonly', '');
-		} else {
-			this.removeAttribute('readonly');
-		}
-	}
-
-	private _readOnly = false;
-
-	public get readOnly() {
-		return this._readOnly;
-	}
-
-	public set readOnly(value: boolean) {
-		if (this._readOnly === value) {
-			return;
-		}
-
-		this._readOnly = value;
-		this.readOnlyChanged();
-	}
-
 	private colorChanged() {
 		this.updateChildrenColor();
 	}
@@ -380,10 +357,6 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		}
 	}
 
-	private readonlyAttributeChanged(value: string) {
-		this.readOnly = value === '';
-	}
-
 	private colorAttributeChanged(value: string) {
 		this.color = value;
 	}
@@ -403,8 +376,6 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			case 'disabled': this.disabledAttributeChanged(newValue);
 				break;
 			case 'size': this.sizeAttributeChanged(newValue);
-				break;
-			case 'readonly': this.readonlyAttributeChanged(newValue);
 				break;
 			case 'color': this.colorAttributeChanged(newValue);
 				break;
