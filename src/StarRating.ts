@@ -82,7 +82,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			label += ' deaktiveret';
 		}
 
-		this.ariaLabel = label;
+		this['ariaLabel'] = label;
 	}
 
 	private valueChanged() {
@@ -168,7 +168,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			gap = 12;
 		}
 
-		this.style.gap = gap + 'px';
+		this.style['gap'] = gap + 'px';
 	}
 
 	private updateChildrenSize() {
@@ -198,7 +198,7 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			offset = 12;
 		}
 
-		this.style.outlineOffset = offset + 'px';
+		this.style['outlineOffset'] = offset + 'px';
 	}
 
 	private updateBorderRadius() {
