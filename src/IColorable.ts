@@ -12,5 +12,5 @@ export default interface IColorable extends HTMLElement {
 	/**
 	 * The background color of the star background rectangle.
 	 */
-	// backgroundColor: string;
+	backgroundColor: string;
 }

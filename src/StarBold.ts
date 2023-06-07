@@ -52,7 +52,7 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 		}
 	}
 
-	private _color = '#000';
+	private _color = '#eba600';
 
 	public get color() {
 		return this._color;
@@ -73,7 +73,7 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 		}
 	}
 
-	private _disabledColor = '';
+	private _disabledColor = '#b8b8b7';
 
 	public get disabledColor() {
 		return this._disabledColor;
@@ -86,6 +86,25 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 
 		this._disabledColor = value;
 		this.disabledColorChanged();
+	}
+
+	private backgroundColorChanged() {
+		this.backgroundRect.setAttribute('fill', this.backgroundColor);
+	}
+
+	private _backgroundColor = '';
+
+	public get backgroundColor() {
+		return this._backgroundColor;
+	}
+
+	public set backgroundColor(value: string) {
+		if (this._backgroundColor === value) {
+			return;
+		}
+
+		this._backgroundColor = value;
+		this.backgroundColorChanged();
 	}
 
 	private disabledChanged() {

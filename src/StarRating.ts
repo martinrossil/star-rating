@@ -5,7 +5,7 @@ import StarBold from './StarBold';
 
 export default class StarRating extends HTMLElement implements IStarRating, ISizeable, IColorable {
 	public static get observedAttributes() {
-		return ['value', 'disabled', 'size', 'readonly', 'color', 'disabled-color'];
+		return ['value', 'disabled', 'size', 'readonly', 'color', 'disabled-color', 'background-color'];
 	}
 
 	public constructor() {
@@ -173,6 +173,14 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		});
 	}
 
+	private updateChildrenBackgroundColor() {
+		this.childNodes.forEach(child => {
+			if (child instanceof StarBold) {
+				child.backgroundColor = this.backgroundColor;
+			}
+		});
+	}
+
 	private _size: 'small' | 'medium' | 'large' = 'medium';
 
 	public get size() {
@@ -253,6 +261,25 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.disabledColorChanged();
 	}
 
+	private backgroundColorChanged() {
+		this.updateChildrenBackgroundColor();
+	}
+
+	private _backgroundColor = '';
+
+	public get backgroundColor() {
+		return this._backgroundColor;
+	}
+
+	public set backgroundColor(value: string) {
+		if (this._backgroundColor === value) {
+			return;
+		}
+
+		this._backgroundColor = value;
+		this.backgroundColorChanged();
+	}
+
 	private valueAttributeChanged(value: string) {
 		this.value = parseFloat(value);
 	}
@@ -279,6 +306,10 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 		this.disabledColor = value;
 	}
 
+	private backgroundColorAttributeChanged(value: string) {
+		this.backgroundColor = value;
+	}
+
 	public attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
 		switch (name) {
 			case 'value': this.valueAttributeChanged(newValue);
@@ -292,6 +323,8 @@ export default class StarRating extends HTMLElement implements IStarRating, ISiz
 			case 'color': this.colorAttributeChanged(newValue);
 				break;
 			case 'disabled-color': this.disabledColorAttributeChanged(newValue);
+				break;
+			case 'background-color': this.backgroundColorAttributeChanged(newValue);
 				break;
 			default: break;
 		}
