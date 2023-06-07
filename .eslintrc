@@ -21,6 +21,8 @@
     // All imports in the declaration are only used as types. Use `import type`.
     "@typescript-eslint/consistent-type-imports": "off",
     // Member * should be declared before all public constructor definitions.
-    "@typescript-eslint/member-ordering": "off"
+    "@typescript-eslint/member-ordering": "off",
+    // To e able to use ADVANCED mode in the closure compiler we turn this off.
+    "@typescript-eslint/dot-notation": "off"
   }
 }
