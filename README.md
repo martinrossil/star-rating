@@ -1069,5 +1069,10 @@ We get this.
 
 ![](images/img_15.png)
 
+And when we implement the disabled attribute and the disabled-color attribute,
+and apply it to the Medium element, we get this.
+
+![](images/img_16.png)
+
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
