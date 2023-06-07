@@ -1,7 +1,9 @@
 # star-rating
 A Star Rating component, implemented as a custom element written in Typescript.
 
-## This repo describes the process required to develop a Star Rating custom element in Typescript
+## The process
+This repo describes the process required to develop a Star Rating custom element in Typescript.
+
 In this case, I'm not going to use the boilerplate setup, since it has "lit" as a runtime dependency.
 
 ## Specification
@@ -57,6 +59,8 @@ npm run dev
 ```
 
 ## Implementation
+
+### Base element
 When we start developing a class based custom element, written in Typescript,
 we first identify the public interface and sub elements.
 
@@ -156,6 +160,7 @@ export default class StarRating extends HTMLElement implements IStarRating {
 customElements.define('star-rating', StarRating);
 ```
 
+### property / attribute syncronization
 We now have to syncronize the properties and attributes, so when one changes, the
 other updates aswell.
 
@@ -288,6 +293,7 @@ public set value(value: number) {
 }
 ```
 
+### Sub star elements
 Time to implement sub elements that will show the actual stars.
 
 So let's create a StarBold custom element that will show a single star / SVG graphics.
@@ -399,6 +405,7 @@ In the Elements tab in dev tools, we now see this.
 </star-rating>
 ```
 
+### Star sizing
 We don't see anything on screen, so lets implement some physical size.
 
 In the StarBold class constructor we add.
@@ -514,6 +521,7 @@ We now see this on screen.
 
 ![](images/img_3.png)
 
+### Rendering the stars
 Now lets render some stars!
 
 The stars will be rendered using SVG, so lets implement that in the StarBold class.
