@@ -23,6 +23,12 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 		this.addEventListener('click', this.clicked);
 	}
 
+	private removeEventListeners() {
+		this.removeEventListener('mouseover', this.mouseOver);
+		this.removeEventListener('mouseleave', this.mouseLeave);
+		this.removeEventListener('click', this.clicked);
+	}
+
 	private mouseOver() {
 		this.dispatchEvent(new CustomEvent('STAR_MOUSE_OVER', {detail: this.starValue, bubbles: true}));
 	}
@@ -133,8 +139,12 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 	private disabledChanged() {
 		if (this.disabled) {
 			this.valueRect.setAttribute('fill', this.disabledColor);
+			this.removeEventListeners();
+			this.style.cursor = 'default';
 		} else {
 			this.valueRect.setAttribute('fill', this.color);
+			this.addEventListeners();
+			this.style.cursor = 'pointer';
 		}
 	}
 
