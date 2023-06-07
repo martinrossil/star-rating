@@ -604,6 +604,7 @@ We have the star-bold.svg
 </svg>
 ```
 
+### SVGOMG optimization
 Go to SVGOMG here https://jakearchibald.github.io/svgomg/ and paste in the svg.
 
 The bytes went from 679 to 253 bytes, that's 37% of the original size.
@@ -637,6 +638,7 @@ We remove the gray background from the star-bold element and we get this.
 
 ![](images/img_5.png)
 
+### Gaps between stars
 Lets update the gap between the stars when resizing, so it looks better.
 In the star-rating element we add this.
 
@@ -663,7 +665,7 @@ And we get this.
 
 ![](images/img_6.png)
 
-## Half star / decimal implementation
+### Half star / decimal
 ClipPath masking to the rescue!
 
 ClipPath masking lets us use a path as masking for other elements, so now the path element will not be
@@ -802,7 +804,7 @@ The clipPath id is a global variable, so if you have more than one declared, whi
 
 So instead, give the id a random generated value instead of static "mask" in this case and point to that when setting the clipPath style property.
 
-## Correct value rendering of the stars
+### Correct value rendering
 
 Each star is now rendering (50%), which is not correct, so lets first remove the 50% width of the valueRect, so we only have 100% height.
 
@@ -926,7 +928,7 @@ We remember to remove this in the constructor.
 this.value = 0.75;
 ```
 
-## Implementing <star-rating> value property / attribute to show stars correctly
+### <star-rating> value property / attribute
 
 We now head over to the <star-rating> element, where we have the valueChanged() method,
 that currently updated the value attribute.
@@ -1022,7 +1024,7 @@ Which will result in the star values being shown correctly.
 
 ![](images/img_14.png)
 
-## Defining custom colors
+### Defining custom colors
 
 The values for colors are hard typed, we should change this.
 So we create a color properties / attributes interface IColorable.
@@ -1082,7 +1084,7 @@ and apply it to the Medium element, we get this.
 
 ![](images/img_16.png)
 
-## Accessibility (A11Y)
+### Accessibility (A11Y)
 
 To make the <star-rating> element accessible, we need to implement a few things.
 
@@ -1198,6 +1200,9 @@ private updateAriaLabelProperty() {
 	this.ariaLabel = label;
 }
 ```
+
+## Bundling the element javascript
+
 
 ## Production build
 - Production build is done with the Google Closure Compiler that outputs bundles 30% smaller than esbuild.
