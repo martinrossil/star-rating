@@ -11,22 +11,56 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 		this.style.height = '24px';
 		this.style.display = 'inline-block';
 		this.style.cursor = 'pointer';
+		this.style['outlineOffset'] = '2px';
+		this.style.borderRadius = '50%';
+		this.tabIndex = 0;
+		this.keyDown = this.keyDown.bind(this);
 		this.appendChild(this.svg);
 		this.addEventListeners();
+		this.setAriaLabel();
+	}
+
+	private setAriaLabel() {
+		this['ariaLabel'] = this.starValue + ' stjerner, tryk space eller enter for at vælge';
+	}
+
+	private removeAriaLabel() {
+		this['ariaLabel'] = 'hidden';
 	}
 
 	private readonly starValue: number;
 
 	private addEventListeners() {
+		this.addEventListener('focus', this.focused);
+		this.addEventListener('blur', this.blurred);
 		this.addEventListener('mouseover', this.mouseOver);
 		this.addEventListener('mouseleave', this.mouseLeave);
 		this.addEventListener('click', this.clicked);
 	}
 
 	private removeEventListeners() {
+		this.removeEventListener('focus', this.focused);
+		this.removeEventListener('blur', this.blurred);
 		this.removeEventListener('mouseover', this.mouseOver);
 		this.removeEventListener('mouseleave', this.mouseLeave);
 		this.removeEventListener('click', this.clicked);
+	}
+
+	private focused() {
+		document.addEventListener('keydown', this.keyDown);
+		this.style.outline = 'solid 2px ' + this.color;
+	}
+
+	private blurred() {
+		document.removeEventListener('keydown', this.keyDown);
+		this.style.outline = 'none';
+	}
+
+	private keyDown(e: KeyboardEvent) {
+		if (e.code === 'Enter' || e.code === 'Space') {
+			e.preventDefault();
+			this.dispatchEvent(new CustomEvent('STAR_CLICKED', {detail: this.starValue, bubbles: true}));
+		}
 	}
 
 	private mouseOver() {
@@ -141,10 +175,14 @@ export default class StarBold extends HTMLElement implements ISizeable, IStar, I
 			this.valueRect.setAttribute('fill', this.disabledColor);
 			this.removeEventListeners();
 			this.style.cursor = 'default';
+			this.tabIndex = -1;
+			this.removeAriaLabel();
 		} else {
 			this.valueRect.setAttribute('fill', this.color);
 			this.addEventListeners();
 			this.style.cursor = 'pointer';
+			this.tabIndex = 0;
+			this.setAriaLabel();
 		}
 	}
 
